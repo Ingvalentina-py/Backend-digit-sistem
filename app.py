@@ -10,16 +10,14 @@ from model import (
 
 app = FastAPI(title="Digits API (Optdigits 8x8)")
 
-# Para permitir que el front (otro puerto) consuma la API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # en prod: tu dominio
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Entrena si no existen
 startup_metrics = ensure_models_exist()
 mlp, svm_model = load_models()
 
@@ -46,7 +44,6 @@ def sample(index: int = 0, split: str = "test"):
         x = X_test[index].tolist()
         y = int(y_test[index])
 
-    # útil para mostrar como imagen 8x8
     grid = np.array(x).reshape(8, 8).tolist()
     return {"index": index, "split": split, "pixels": x, "grid8x8": grid, "label": y}
 
