@@ -19,7 +19,11 @@ app = FastAPI(title="Detector y Descifrador de Cifrado")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://frontend-digit-sistem.vercel.app",
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+    ],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -59,7 +63,6 @@ def sample(index: int = 0):
         raise HTTPException(status_code=404, detail="Índice fuera de rango")
 
     row = df.iloc[index]
-
     real_class = int(row[18])
 
     return {
