@@ -6,14 +6,9 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from model import (
-    LABELS,
-    analyze_text,
-    ensure_model_exists,
-    load_dataset,
-    load_metrics,
-    load_model,
-)
+from core.config import LABELS
+from core.service import analyze_text, init_model
+from core.training import ensure_model_exists, load_dataset, load_metrics
 
 app = FastAPI(title="Detector y Descifrador de Cifrado")
 
@@ -30,7 +25,7 @@ app.add_middleware(
 )
 
 ensure_model_exists()
-model = load_model()
+init_model()
 
 
 class AnalyzeRequest(BaseModel):
@@ -80,4 +75,4 @@ def analyze(req: AnalyzeRequest):
     if not text:
         raise HTTPException(status_code=400, detail="Debes ingresar un texto")
 
-    return analyze_text(model, text)
+    return analyze_text(text)
