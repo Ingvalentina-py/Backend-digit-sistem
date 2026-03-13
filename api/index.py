@@ -1,19 +1,21 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, conlist
-import numpy as np
+from pydantic import BaseModel
 import os
 import sys
 
-# permitir importar model.py desde la raíz del proyecto
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from model import (
-    load_data, ensure_models_exist, load_models,
-    evaluate_models, predict_from_pixels
+    LABELS,
+    analyze_text,
+    ensure_model_exists,
+    load_dataset,
+    load_metrics,
+    load_model,
 )
 
-app = FastAPI(title="Digits API (Optdigits 8x8)")
+app = FastAPI(title="Detector y Descifrador de Cifrado")
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,43 +25,56 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-startup_metrics = ensure_models_exist()
-mlp, svm_model = load_models()
+ensure_model_exists()
+model = load_model()
 
-X_train, y_train, X_test, y_test = load_data()
 
-class PredictRequest(BaseModel):
-    model: str
-    pixels: conlist(float, min_length=64, max_length=64)
+class AnalyzeRequest(BaseModel):
+    text: str
+
 
 @app.get("/")
 def root():
-    return {"ok": True, "message": "Digits API running"}
+    return {
+        "ok": True,
+        "message": "API de detección de algoritmos de cifrado funcionando"
+    }
+
+
+@app.get("/labels")
+def labels():
+    return LABELS
+
 
 @app.get("/metrics")
 def metrics():
-    return evaluate_models(mlp, svm_model, X_test, y_test)
+    return load_metrics()
+
 
 @app.get("/sample")
-def sample(index: int = 0, split: str = "test"):
-    if split == "train":
-        x = X_train[index].tolist()
-        y = int(y_train[index])
-    else:
-        x = X_test[index].tolist()
-        y = int(y_test[index])
+def sample(index: int = 0):
+    df = load_dataset()
 
-    grid = np.array(x).reshape(8, 8).tolist()
+    if index < 0 or index >= len(df):
+        raise HTTPException(status_code=404, detail="Índice fuera de rango")
+
+    row = df.iloc[index]
+
+    real_class = int(row[18])
+
     return {
         "index": index,
-        "split": split,
-        "pixels": x,
-        "grid8x8": grid,
-        "label": y
+        "text": str(row[0]),
+        "real_class": real_class,
+        "real_label": LABELS[real_class]
     }
 
-@app.post("/predict")
-def predict(req: PredictRequest):
-    model = mlp if req.model.lower() == "mlp" else svm_model
-    pred, proba = predict_from_pixels(model, req.pixels)
-    return {"model": req.model, "prediction": pred, "proba": proba}
+
+@app.post("/analyze")
+def analyze(req: AnalyzeRequest):
+    text = (req.text or "").strip()
+
+    if not text:
+        raise HTTPException(status_code=400, detail="Debes ingresar un texto")
+
+    return analyze_text(model, text)

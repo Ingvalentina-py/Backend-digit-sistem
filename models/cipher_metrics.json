@@ -1,0 +1,94 @@
+{
+  "accuracy": 0.833,
+  "confusion_matrix": [
+    [
+      345,
+      0,
+      55,
+      0,
+      0
+    ],
+    [
+      4,
+      259,
+      137,
+      0,
+      0
+    ],
+    [
+      18,
+      120,
+      262,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      400,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      400
+    ]
+  ],
+  "report": {
+    "0": {
+      "precision": 0.9400544959128065,
+      "recall": 0.8625,
+      "f1-score": 0.8996088657105606,
+      "support": 400.0
+    },
+    "1": {
+      "precision": 0.683377308707124,
+      "recall": 0.6475,
+      "f1-score": 0.6649550706033376,
+      "support": 400.0
+    },
+    "2": {
+      "precision": 0.5770925110132159,
+      "recall": 0.655,
+      "f1-score": 0.6135831381733021,
+      "support": 400.0
+    },
+    "3": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 400.0
+    },
+    "4": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 400.0
+    },
+    "accuracy": 0.833,
+    "macro avg": {
+      "precision": 0.8401048631266292,
+      "recall": 0.833,
+      "f1-score": 0.8356294148974401,
+      "support": 2000.0
+    },
+    "weighted avg": {
+      "precision": 0.8401048631266292,
+      "recall": 0.833,
+      "f1-score": 0.83562941489744,
+      "support": 2000.0
+    }
+  },
+  "labels": {
+    "0": "Texto plano",
+    "1": "Caesar Cipher",
+    "2": "ROT13",
+    "3": "Base64",
+    "4": "XOR"
+  },
+  "train_size": 8000,
+  "test_size": 2000
+}

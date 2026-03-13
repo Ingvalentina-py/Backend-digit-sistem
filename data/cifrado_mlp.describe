@@ -1,0 +1,113 @@
+================================================================================
+DATASET: cifrado_mlp.data
+DESCRIPCIÓN: Detección de Algoritmos de Cifrado mediante RNA (MLP)
+================================================================================
+
+CONTEXTO DEL PROBLEMA
+----------------------
+Este dataset contiene mensajes de texto en español procesados con distintos
+algoritmos de cifrado. El objetivo es entrenar un Perceptrón Multicapa (MLP)
+capaz de clasificar, dado un texto cifrado, qué algoritmo de cifrado fue
+utilizado — o si el texto no fue cifrado.
+
+CLASES (variable objetivo: columna 19 — 'clase')
+-------------------------------------------------
+  0  →  Texto plano       (sin cifrado)
+  1  →  Caesar Cipher     (desplazamiento fijo del alfabeto, shift variable)
+  2  →  ROT13             (Caesar con shift=13, simétrico)
+  3  →  Base64            (codificación binario-a-texto estándar)
+  4  →  XOR               (operación XOR bit a bit con clave hexadecimal)
+
+DIMENSIONES
+-----------
+  Filas:    10,000
+  Columnas: 19 (17 features numéricas + 1 texto + 1 clase)
+  Clases:   5 (perfectamente balanceadas, 2,000 ejemplos por clase)
+
+COLUMNAS (orden en el archivo .data)
+--------------------------------------
+  Col  0  →  texto_cifrado     : el mensaje cifrado (texto, NO usar como feature directa)
+  Col  1  →  longitud          : número de caracteres del texto cifrado
+  Col  2  →  entropia          : entropía de Shannon del texto
+  Col  3  →  freq_mayusculas   : proporción de letras mayúsculas
+  Col  4  →  freq_minusculas   : proporción de letras minúsculas
+  Col  5  →  freq_numeros      : proporción de dígitos numéricos
+  Col  6  →  freq_espacios     : proporción de espacios en blanco
+  Col  7  →  freq_especiales   : proporción de caracteres especiales (!, =, @, etc.)
+  Col  8  →  rango_ascii_min   : valor ASCII mínimo presente en el texto
+  Col  9  →  rango_ascii_max   : valor ASCII máximo presente en el texto
+  Col 10  →  media_ascii       : valor medio de los códigos ASCII
+  Col 11  →  varianza_ascii    : varianza de los códigos ASCII
+  Col 12  →  freq_char_top1    : frecuencia relativa del carácter más repetido
+  Col 13  →  freq_char_top2    : frecuencia relativa del 2do carácter más repetido
+  Col 14  →  tiene_padding     : 1 si el texto termina en '=' o '==' (pista Base64)
+  Col 15  →  proporcion_alpha  : proporción de caracteres alfabéticos
+  Col 16  →  unique_chars      : número de caracteres únicos distintos
+  Col 17  →  ratio_unique      : proporción de caracteres únicos sobre total
+  Col 18  →  clase             : ETIQUETA (0-4, ver tabla de clases arriba)
+
+NOTAS IMPORTANTES PARA EL ESTUDIANTE
+--------------------------------------
+  1. La columna 'texto_cifrado' (col 0) es informativa — NO la uses directamente
+     como input de la RNA. Ya se extrajeron features numéricas de ella (cols 1-17).
+
+  2. Las features de entrada para tu MLP son las columnas 1 a 17 (17 features).
+
+  3. La variable objetivo es la columna 18 (clase).
+
+  4. XOR produce caracteres no imprimibles representados en hexadecimal,
+     lo que genera patrones muy distintos en rango_ascii_max y freq_numeros.
+
+  5. Caesar y ROT13 son algorítmicamente similares — la RNA debe aprender
+     a distinguirlos por sus distribuciones de frecuencia y entropía.
+
+  6. Base64 siempre produce solo caracteres A-Z, a-z, 0-9, +, / y =
+     lo que se refleja en rango_ascii_min, rango_ascii_max y tiene_padding.
+
+ESTADÍSTICAS DESCRIPTIVAS (features numéricas)
+
+         longitud    entropia  freq_mayusculas  freq_minusculas  freq_numeros  freq_espacios  freq_especiales  rango_ascii_min  rango_ascii_max  media_ascii  varianza_ascii  freq_char_top1  freq_char_top2  tiene_padding  proporcion_alpha  unique_chars  ratio_unique
+count  10000.0000  10000.0000       10000.0000       10000.0000    10000.0000     10000.0000       10000.0000       10000.0000       10000.0000   10000.0000      10000.0000      10000.0000      10000.0000     10000.0000        10000.0000    10000.0000    10000.0000
+mean      71.7005      3.8865           0.2205           0.5222        0.1772         0.0770           0.0031          38.5612         131.3652      85.6014        599.3830          0.1734          0.1158         0.1418            0.7427       20.4956        0.3423
+std       35.7425      0.5894           0.3059           0.3264        0.3109         0.0652           0.0091           8.0624          43.4721      15.0894        309.4401          0.0878          0.0326         0.3489            0.2698        8.2908        0.1566
+min       13.0000      2.5331           0.0000           0.0000        0.0000         0.0000           0.0000          32.0000          84.0000      52.9444         60.2747          0.0403          0.0403         0.0000            0.0278        8.0000        0.0612
+25%       48.0000      3.5294           0.0000           0.2302        0.0000         0.0000           0.0000          32.0000         102.0000      71.7133        366.3431          0.1212          0.0952         0.0000            0.8333       14.0000        0.2464
+50%       65.0000      3.8464           0.0192           0.4792        0.0000         0.1061           0.0000          32.0000         122.0000      89.8393        559.0762          0.1471          0.1167         0.0000            0.8667       18.0000        0.3226
+75%       92.0000      4.1836           0.4500           0.8571        0.1154         0.1333           0.0000          48.0000         122.0000      98.6418        750.3410          0.1875          0.1341         0.0000            0.8889       23.0000        0.4318
+max      200.0000      5.4170           0.9077           0.9362        0.9722         0.2115           0.1000          61.0000         250.0000     110.5263       2266.1600          0.5000          0.2879         1.0000            0.9833       52.0000        0.8929
+
+DISTRIBUCIÓN POR CLASE
+
+  Clase 0 - Texto plano:
+    entropia media  : 3.8692
+    rango_ascii_max : 200.9
+    freq_numeros    : 0.0003
+    tiene_padding   : 0.0000
+
+  Clase 1 - Caesar:
+    entropia media  : 3.8669
+    rango_ascii_max : 116.1
+    freq_numeros    : 0.0004
+    tiene_padding   : 0.0000
+
+  Clase 2 - ROT13:
+    entropia media  : 3.8484
+    rango_ascii_max : 116.9
+    freq_numeros    : 0.0004
+    tiene_padding   : 0.0000
+
+  Clase 3 - Base64:
+    entropia media  : 4.7449
+    rango_ascii_max : 121.2
+    freq_numeros    : 0.0968
+    tiene_padding   : 0.7090
+
+  Clase 4 - XOR:
+    entropia media  : 3.1032
+    rango_ascii_max : 101.6
+    freq_numeros    : 0.7882
+    tiene_padding   : 0.0000
+
+================================================================================
+FIN DEL ARCHIVO .describe
+================================================================================
